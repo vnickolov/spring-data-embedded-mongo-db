@@ -2,15 +2,14 @@ package com.vn.springdataembeddedmongodb.repository;
 
 import com.vn.springdataembeddedmongodb.model.Account;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class AccountCrudRepositoryTest {
@@ -21,7 +20,7 @@ class AccountCrudRepositoryTest {
   @Test
   void givenValue_whenFindAllByValue_thenFindAccount() {
     repository.save(new Account(null, "Bill", 12.3)).block();
-    Flux<Account> accountFlux = repository.findAllByValue(12.3d);
+    Flux<Account> accountFlux = repository.findAllByValue(12.3);
 
     StepVerifier
       .create(accountFlux)
@@ -47,6 +46,28 @@ class AccountCrudRepositoryTest {
         assertEquals(Double.valueOf(12.3) , account.getValue());
         assertNotNull(account.getId());
       })
+      .expectComplete()
+      .verify();
+  }
+
+  @Test
+  void givenNoOwner_whenFindFirstByOwner_thenReturnEmpty() {
+    Mono<Account> accountMono = repository.findFirstByOwner(Mono.just("Bill"));
+
+    StepVerifier
+      .create(accountMono)
+      .expectNextCount(0)
+      .expectComplete()
+      .verify();
+  }
+
+  @Test
+  void givenNoOwner_whenFindByValue_thenReturnEmpty() {
+    Flux<Account> accountFlux = repository.findAllByValue(12.3);
+
+    StepVerifier
+      .create(accountFlux)
+      .expectNextCount(0)
       .expectComplete()
       .verify();
   }
