@@ -1,6 +1,7 @@
 package com.vn.springdataembeddedmongodb.repository;
 
 import com.vn.springdataembeddedmongodb.model.Account;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,11 @@ class AccountCrudRepositoryTest {
 
   @Autowired
   private AccountCrudRepository repository;
+
+  @BeforeEach
+  void setUp() {
+    repository.deleteAll();
+  }
 
   @Test
   void givenValue_whenFindAllByValue_thenFindAccount() {
@@ -52,7 +58,7 @@ class AccountCrudRepositoryTest {
 
   @Test
   void givenNoOwner_whenFindFirstByOwner_thenReturnEmpty() {
-    Mono<Account> accountMono = repository.findFirstByOwner(Mono.just("Bill"));
+    Mono<Account> accountMono = repository.findFirstByOwner(Mono.just("Will"));
 
     StepVerifier
       .create(accountMono)
@@ -63,7 +69,7 @@ class AccountCrudRepositoryTest {
 
   @Test
   void givenNoOwner_whenFindByValue_thenReturnEmpty() {
-    Flux<Account> accountFlux = repository.findAllByValue(12.3);
+    Flux<Account> accountFlux = repository.findAllByValue(15.3);
 
     StepVerifier
       .create(accountFlux)
